@@ -32,7 +32,7 @@ struct ButtonComponentView: View {
 
 struct Counter: View {
     
-    @State var contadorTotal = 0
+    @State var contadorTotal = 5
     
     var body: some View {
         

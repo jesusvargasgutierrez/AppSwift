@@ -16,18 +16,19 @@ struct Ejercicio1: View {
                 Rectangle().foregroundColor(.orange)
                 Rectangle().foregroundColor(.yellow)
             }.frame(height: 100)
+            
             Rectangle().frame(height: 100)
                 .foregroundColor(.orange)
+            Rectangle().frame(height: 100)
+                .foregroundColor(.blue)
+            
             HStack{
                 Rectangle().foregroundColor(.black)
                 Rectangle().foregroundColor(.orange)
                 Rectangle().foregroundColor(.yellow)
             }.frame(height: 100)
             
-        }.background(.cyan)
-        
-        
-        
+        }.frame(maxWidth: .infinity, maxHeight: .infinity).background(.green)
         .padding()
     }
 }
