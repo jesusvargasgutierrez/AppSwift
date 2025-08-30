@@ -7,28 +7,64 @@
 
 import SwiftUI
 
+
+struct ComponentItem: Identifiable {
+    let id = UUID()
+    let title: String
+    let destination: AnyView
+}
+
+
 struct MenuView: View {
+    
+    
+    let components:[ComponentItem] = [
+        
+        ComponentItem(title: "Button Component",
+                      destination: AnyView(ButtonComponentView())),
+        
+        
+        ComponentItem(title: "List Component",
+                      destination: AnyView(ListComponentView())),
+        
+        
+        ComponentItem(title: "Label Component",
+                      destination: AnyView(LabelComponentView())),
+    ]
+    
     
     var body: some View {
         NavigationStack{
-            VStack{
+            List{
                 
-                NavigationLink(destination:CalcPropinasView()) {
-                    Text("Calc. Propinas")
+                Section(header: Text("Aplicaciones")){
+                    
+                    
+                    NavigationLink(destination:CalcPropinasView()) {
+                        Text("Calc. Propinas")
+                    }
+                    
+                    NavigationLink(destination:CountrySearchView()) {
+                        Text("Explorar Paises")
+                    }
                 }
-
-                //Otra sintaxis para NavigationLink
-                NavigationLink {
-
-                } label: {
-                    Text("App 2")
+                
+                Section(header: Text("Componentes")){
+                    
+                    
+                    ForEach(components){ item in
+                        //Otra sintaxis para NavigationLink
+                        NavigationLink {
+                            item.destination
+                        } label: {
+                            Text(item.title)
+                        }
+                        
+                    }
+                    
+                    
                 }
                 
-
-                
-                Text("App 3")
-                Text("App 4")
-                Text("App 5")
                 
             }
         }

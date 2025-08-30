@@ -177,3 +177,4 @@ struct TotalPorPagar:View {
     CalcPropinasView()
     //TotalTextField()
 }
+            
