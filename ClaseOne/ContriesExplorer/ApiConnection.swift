@@ -21,6 +21,7 @@ class ApiConnection{
         let currencies: [String: Currency]
         let capital: [String]
         let region: String
+        let cca2: String
         
         
         
@@ -49,20 +50,128 @@ class ApiConnection{
         }
     }
     
+    
+    func getCountryByCCA(cca2: String) async throws -> Country {
+    
+        guard let countryURL = URL(string:
+                                "https://restcountries.com/v3.1/alpha/\(cca2)?fields=name,capital,currencies,flags,region,cca2"
+        ) else {
+            throw ServiceAPIError.invalidURL
+        }
+        
+        var request = URLRequest (url: countryURL)
+        
+        request.httpMethod = "GET"
+        request.timeoutInterval = 15
+        
+             
+        let(data, response) = try await URLSession.shared.data(for: request)
+        
+        if let httpResponse = response as? HTTPURLResponse {
+            guard (200..<300).contains(httpResponse.statusCode) else {
+                throw ServiceAPIError.requestFailed(statusCode: httpResponse.statusCode)
+            }
+        }
+        
+        guard !data.isEmpty else {
+            throw ServiceAPIError.noData
+        }
+        
+        do{
+            
+            let decoder = JSONDecoder()
+            decoder.keyDecodingStrategy = .useDefaultKeys
+            
+            
+            let country = try decoder.decode(Country.self, from: data)
+            
+            return country
+            
+        } catch {
+            throw ServiceAPIError.decodingFailed
+        }
+        
+    }
+    
+    
     func getCountriesByRegion(regionName:String) async throws -> [Country] {
         
         
-        let countriesURL = URL(string:
-                                "https://restcountries.com/v3.1/region/\(regionName)?fields=name,capital,currencies,flags,region")!
         
-        let(data, _) = try await URLSession.shared.data(from: countriesURL)
+        guard let countriesURL = URL(string:
+                                "https://restcountries.com/v3.1/region/\(regionName)?fields=name,capital,currencies,flags,region,cca2"
+        ) else {
+            throw ServiceAPIError.invalidURL
+        }
         
-        let countries = try JSONDecoder().decode([Country].self, from: data)
+        var request = URLRequest (url: countriesURL)
         
-        return countries
+        request.httpMethod = "GET"
+        request.timeoutInterval = 15
+        
+             
+        let(data, response) = try await URLSession.shared.data(for: request)
+        
+        if let httpResponse = response as? HTTPURLResponse {
+            guard (200..<300).contains(httpResponse.statusCode) else {
+                throw ServiceAPIError.requestFailed(statusCode: httpResponse.statusCode)
+            }
+        }
+        
+        guard !data.isEmpty else {
+            throw ServiceAPIError.noData
+        }
+        
+        do{
+            
+            let countries = try JSONDecoder()
+                .decode([Country].self, from: data)
+            
+            return countries
+            
+            
+        }catch {
+        
+            throw ServiceAPIError.decodingFailed
+            
+        }
+        
+
         
         
     }
+    
+    enum ServiceAPIError: Error, LocalizedError {
+        
+        case invalidURL
+        case requestFailed(statusCode: Int)
+        case decodingFailed
+        case noData
+        
+        
+        var errorDescription: String? {
+            switch self {
+                
+            case .invalidURL:
+                return "La URL es invalida"
+                
+            case .requestFailed(let statusCode):
+                return "La solicitud fallo con el estado HTTP: \(statusCode)"
+                
+            case .decodingFailed:
+                return "No se pudieron decodificar los datos"
+                
+            case .noData:
+                return "No se recibieron datos."
+                
+            }
+        }
+        
+    }
+    
+    
+    
+    
     
     
 }
