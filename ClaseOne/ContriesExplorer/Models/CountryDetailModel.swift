@@ -10,7 +10,8 @@ import Foundation
 
 struct CountryDetailModel: Codable, Identifiable {
     
-        var id = UUID()
+        var id: UUID? = UUID()
+    
         let flags: Flag
         let name: Name
         let currencies: [String: Currency]?

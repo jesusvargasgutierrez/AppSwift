@@ -51,7 +51,7 @@ class ApiConnection{
     }
     
     
-    func getCountryByCCA(cca2: String) async throws -> Country {
+    func getCountryByCCA(cca2: String) async throws -> CountryDetailModel {
     
         guard let countryURL = URL(string:
                                 "https://restcountries.com/v3.1/alpha/\(cca2)?fields=name,capital,currencies,flags,region,cca2"
@@ -66,6 +66,9 @@ class ApiConnection{
         
              
         let(data, response) = try await URLSession.shared.data(for: request)
+        if let jsonString = String(data: data, encoding: .utf8) {
+            print("Respuesta JSON: \(jsonString)")
+        }
         
         if let httpResponse = response as? HTTPURLResponse {
             guard (200..<300).contains(httpResponse.statusCode) else {
@@ -83,7 +86,7 @@ class ApiConnection{
             decoder.keyDecodingStrategy = .useDefaultKeys
             
             
-            let country = try decoder.decode(Country.self, from: data)
+            let country = try decoder.decode(CountryDetailModel.self, from: data)
             
             return country
             

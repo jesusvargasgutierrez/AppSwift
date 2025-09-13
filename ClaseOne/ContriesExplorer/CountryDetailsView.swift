@@ -11,7 +11,7 @@ struct CountryDetailsView: View {
     
     var countryCode: String
     
-    @State private var country: ApiConnection.Country? = nil
+    @State private var country: CountryDetailModel? = nil
     @State private var isLoading = true
     @State private var errorMessage: String? = nil
     
