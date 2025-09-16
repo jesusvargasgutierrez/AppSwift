@@ -24,13 +24,51 @@ struct CountryDetailsView: View {
                 ProgressView("Cargando informacion")
                     .font(.title3)
             } else if let country = country {
-                VStack{
-                    Text(country.name.common)
-                        .font(.largeTitle)
-                        .foregroundColor(.red)
+                List{
+                    AsyncImage(url: URL(string: country.flags.png)) { phase in
+                        switch phase {
+                        case .success (let image):
+                            image
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 50, height:30)
+                                .cornerRadius(4)
+                        case .empty:
+                            ProgressView()
+                                .frame(width: 50, height: 50)
+                        case .failure(_):
+                            Label(title:{Text(country.name.common)
+                                    .font(.title)
+                                    .foregroundColor(.red)
+                                    .bold()},
+                                  icon: { Image(systemName: "flag.slash.fill")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: 50, height: 50)
+                                .foregroundColor(.gray)}
+                            )
+                        @unknown default:
+                            EmptyView()
+                            
+                        }
+                    }
+                    Text("Region: \(country.region)")
+                        .font(.title)
+                        .foregroundColor(.black)
                         .bold()
+                    if let currency = country.currencies?.first?.value {
+                        Text("Moneda: \(currency.name)")
+                            .font(.title)
+                            .foregroundColor(.black)
+                            .bold()
+                    }
+                    if let currency = country.currencies?.first?.value {
+                        Text("Simbolo: \(currency.symbol ?? "")")
+                            .font(.title)
+                            .foregroundColor(.black)
+                            .bold()
+                    }
                 }
-                
             } else if let errorMessage = errorMessage {
                 Text("Error \(errorMessage)")
                     .foregroundColor(.red)
