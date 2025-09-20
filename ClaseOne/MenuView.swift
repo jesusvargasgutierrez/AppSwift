@@ -47,6 +47,11 @@ struct MenuView: View {
                     NavigationLink(destination:CountrySearchView()) {
                         Text("Explorar Paises")
                     }
+                    
+                    NavigationLink(destination:GestionClientesView()) {
+                        Text("Gestion Clientes")
+                    }
+                    
                 }
                 
                 Section(header: Text("Componentes")){

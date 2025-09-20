@@ -10,16 +10,16 @@ import SwiftUI
 struct CountrySearchView: View {
     
     @State var searchRegion: String = ""
-    @State var countries: [ApiConnection.Country]? = nil
+    @State var countries: [CountryListModel]? = nil
     
     @State private var selecction: String?
     
     
-    var groupedContries: [String: [ApiConnection.Country]]
+    var groupedContries: [String: [CountryListModel]]
     {
         guard let countries = countries else { return[:] }
         return Dictionary(grouping: countries){
-            String($0.name.common.prefix(1)).uppercased()
+            String($0.name.prefix(1)).uppercased()
         }
         
     }
@@ -62,8 +62,8 @@ struct CountrySearchView: View {
         
         if let countriesForKey = groupedContries[key] {
             Section(header: sectionHeader(key)){
-                ForEach(countriesForKey.sorted(                            by:{$0.name.common < $1.name.common}),
-                        id: \.name.common) { country in
+                ForEach(countriesForKey.sorted(                            by:{$0.name < $1.name}),
+                        id: \.name) { country in
                     countryRow(country)
                 }
             }
@@ -86,12 +86,12 @@ struct CountrySearchView: View {
     
     
     @ViewBuilder
-    func countryRow(_ country:ApiConnection.Country) -> some View {
+    func countryRow(_ country:CountryListModel) -> some View {
         NavigationLink(destination: CountryDetailsView(countryCode: country.cca2)) {
             HStack{
                 
                 
-                AsyncImage(url: URL(string: country.flags.png)) { phase in
+                AsyncImage(url: URL(string: country.flag)) { phase in
                     switch phase {
                     case .success (let image):
                         image
@@ -119,7 +119,7 @@ struct CountrySearchView: View {
                     
                 }
                 
-                Text(country.name.common)
+                Text(country.name)
             }
         }
     }
@@ -150,7 +150,7 @@ struct CountrySearchView: View {
             
             Task{
                 do{
-                    countries = try await ApiConnection().getCountriesByRegion(regionName: searchRegion)
+                    countries = try await ApiConnection().getCountriesList(regionName: searchRegion)
                 }catch{
                     print("Error en consulta \(error)")
                 }

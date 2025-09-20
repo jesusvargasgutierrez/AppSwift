@@ -96,6 +96,55 @@ class ApiConnection{
         
     }
     
+    func getCountriesList(regionName:String) async throws -> [CountryListModel] {
+        
+        
+        
+        guard let countriesURL = URL(string:
+                                "http://localhost:3000/api/v1/getAmericaCountriesList"
+        ) else {
+            throw ServiceAPIError.invalidURL
+        }
+        
+        var request = URLRequest (url: countriesURL)
+        
+        request.httpMethod = "GET"
+        request.timeoutInterval = 15
+        
+             
+        let(data, response) = try await URLSession.shared.data(for: request)
+        
+        if let httpResponse = response as? HTTPURLResponse {
+            guard (200..<300).contains(httpResponse.statusCode) else {
+                throw ServiceAPIError.requestFailed(statusCode: httpResponse.statusCode)
+            }
+        }
+        
+        guard !data.isEmpty else {
+            throw ServiceAPIError.noData
+        }
+        
+        do{
+            
+            let countries = try JSONDecoder()
+                .decode([CountryListModel].self, from: data)
+            
+            return countries
+            
+            
+        }catch {
+        
+            throw ServiceAPIError.decodingFailed
+            
+        }
+        
+
+        
+        
+    }
+    
+    
+    
     
     func getCountriesByRegion(regionName:String) async throws -> [Country] {
         
